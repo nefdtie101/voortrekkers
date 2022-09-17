@@ -1,0 +1,34 @@
+﻿@layout  LoginLayout
+@page "/login"
+@inject LoginService _loginService
+
+<div id="login-top" class="row px-3">
+    <div class="col-md-6 col-lg-4 p-3">
+        <RadzenCard>
+            <EditForm Model="login" OnSubmit="onLogin" >
+                <h4 class="mb-4">login</h4>
+                <RadzenTextBox @bind-Value="login.email"  Placeholder="Username" Class="w-100"/>
+                
+                <h4 class="mb-4">Password</h4>
+                <RadzenPassword @bind-Value="login.password" Placeholder="Enter password..." Class="w-100"/>
+                <a href="/login/forgotPassword">Forgot Password</a>
+                <br/>
+
+                <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="Login" ButtonStyle="ButtonStyle.Primary"/>
+            </EditForm>
+        </RadzenCard>
+       
+      
+    </div>
+</div>
+
+@code {
+    LoginModel login = new LoginModel();
+
+    public void onLogin()
+    {
+        _loginService.Login(login);
+    }
+
+   
+}

@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voortrekkers", "Voortrekkers\Voortrekkers.csproj", "{51E33863-D35F-40E0-8869-C36742A08060}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51E33863-D35F-40E0-8869-C36742A08060}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51E33863-D35F-40E0-8869-C36742A08060}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51E33863-D35F-40E0-8869-C36742A08060}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51E33863-D35F-40E0-8869-C36742A08060}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
