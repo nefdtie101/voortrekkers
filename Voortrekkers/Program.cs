@@ -6,6 +6,7 @@ using Voortrekkers;
 using Voortrekkers.Pages.Login;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
+WebAssemblyHostConfiguration configuration = builder.Configuration;
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 

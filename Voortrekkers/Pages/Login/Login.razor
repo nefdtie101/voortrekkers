@@ -1,6 +1,8 @@
 ﻿@layout  LoginLayout
 @page "/login"
 @inject LoginService _loginService
+@inject NavigationManager NavManager
+@inject IJSRuntime JsRuntime
 
 <div id="login-top" class="row px-3">
     <div class="col-md-6 col-lg-4 p-3">
@@ -25,9 +27,17 @@
 @code {
     LoginModel login = new LoginModel();
 
-    public void onLogin()
+    public async Task onLogin()
     {
-        _loginService.Login(login);
+       var res = await _loginService.Login(login);
+        if (res)
+        {
+            NavManager.NavigateTo("/");
+        }
+        else
+        {
+            await JsRuntime.InvokeVoidAsync("incorrectPassword");
+        }
     }
 
    
