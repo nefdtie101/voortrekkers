@@ -37,4 +37,19 @@ public class LoginService
         }
        
     }
+  
+  public async Task<bool> ForgotPassword(LoginModel login)
+  {
+      var uri = _config.GetValue<string>("deployUriApi") + "/ResetPassword";
+      var result = await _httpClient.PostAsJsonAsync(uri, login);
+      var res = await result.Content.ReadAsStringAsync();
+      if (res == "true")
+      {
+          return true;
+      }
+      else
+      {
+          return false;
+      }
+  }
 }
