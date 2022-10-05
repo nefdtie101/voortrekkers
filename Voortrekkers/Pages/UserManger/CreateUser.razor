@@ -1,0 +1,24 @@
+﻿@page "/Users/CreateUser"
+@inject UserService _userService
+
+<RadzenCard>
+ <EditForm Model="user" OnSubmit="onCreate" >
+      <RadzenTextBox @bind-Value="user.FirstName"  Placeholder="Naam" Class="w-100"/>
+      <RadzenTextBox @bind-Value="user.LastName" Placeholder="Van" Class="w-100"/>
+      <RadzenTextBox @bind-Value="user.Email" Placeholder="E-Pos" Class="w-100"/>
+      <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+      </EditForm>
+</RadzenCard>
+
+
+
+@code {
+
+    UserModel user = new UserModel();
+
+    public async Task onCreate()
+    {
+        var res = await _userService.CreateUser(user);
+    }
+
+}

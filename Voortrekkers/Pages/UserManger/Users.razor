@@ -1,0 +1,65 @@
+﻿@page "/Users"
+@inject UserService _userService;
+@inject NavigationManager NavManager
+
+<h3 style="text-align:center;">Gebruikers</h3>
+
+@if (users == null)
+{
+    
+}
+else
+{
+    <div @onclick="createUser" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/newUser.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Naam</th>
+            <th class="MyHeading">Van</th>
+            <th class="MyHeading">Epos</th>
+            <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var user in users)
+        {
+            <tr>
+                <td class="MyBody">@user.FirstName</td>
+                <td class="MyBody">@user.LastName</td>
+                <td class="MyBody">@user.Email</td>
+                <td class="MyBody">
+                    <img src="/icons/edit.png" width="17px" style="margin-left: 10px">
+                    <img src="/icons/Delete.png" width="17px">
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+
+
+
+@code {
+    IEnumerable<UserModel> users;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUsers();
+
+    }
+
+    public void createUser()
+    {
+        NavManager.NavigateTo("/Users/CreateUser");
+    }
+
+    private async Task GetUsers()
+    {
+        var res =  await _userService.GetAllUsers();
+        users = res;
+    }
+}

@@ -23,15 +23,16 @@ public class LoginService
   {
         var uri = _config.GetValue<string>("deployUriApi") + "/login";
         var result = await _httpClient.PostAsJsonAsync(uri, login);
-        var token = await result.Content.ReadAsStringAsync();
-        if (token == "false")
+        var token = await result.Content.ReadFromJsonAsync<JwtModel>();
+        if (token.valid == false )
         {
             return false;
         }
         else
         {
            
-            await _localStorageService.SetItemAsync("token", token);
+            await _localStorageService.SetItemAsync("token", token.token);
+            await _localStorageService.SetItemAsync("refresh", token.refresh);
             await _authenticationStateProvider.GetAuthenticationStateAsync();
             return true;
         }
