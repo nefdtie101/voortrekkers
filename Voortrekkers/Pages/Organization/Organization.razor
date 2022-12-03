@@ -1,0 +1,103 @@
+﻿@page "/Organization"
+@using System.Text.Json
+@inject OrganizationService _organizationService
+@inject NavigationManager NavManager;
+
+
+@if (organizations == null)
+{
+    <div @onclick="createOrganazation" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/organizationCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Naam</th>
+            <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead> 
+    </table>
+    }else
+{
+    <div @onclick="createOrganazation" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/organizationCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Naam</th>
+            <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var organization in organizations)
+        {
+            <tr>
+                <td class="MyBody">@organization.name</td>
+                <td class="MyBody">
+                    <img src="/icons/edit.png" width="17px" @onclick="@(() => UpdateOrg(@organization))" style="margin-left: 10px; cursor: pointer;">
+                    <img @onclick="@(() => onDelete(@organization))" style="cursor: pointer;" src="/icons/Delete.png" width="17px">
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table> 
+}
+
+
+
+ @if (showDelete)
+    {
+        <DeletePopUp message="Is jy seker jy will die organisasie verwyder" onSubmitButton="onDeleteSubmit" onCancelButton="onCancel"></DeletePopUp>
+    }
+
+
+
+@code {
+    IEnumerable<OrganizationModel> organizations; 
+    bool showDelete = false;
+    
+    OrganizationModel currentSelectedOrganization = new OrganizationModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetOrganization();
+    }
+    
+    private async Task GetOrganization()
+    {
+        var res =  await _organizationService.GetAllOrganizations() ;
+        organizations = res;
+    }
+    
+    public void createOrganazation()
+    {
+        var content = "";
+        NavManager.NavigateTo($"/Organization/Create?Key={content}");
+    }
+    
+    private async Task UpdateOrg(OrganizationModel org)
+    {
+        var content = JsonSerializer.Serialize(org);
+        NavManager.NavigateTo($"/Users/CreateUser?key={content}");
+    }
+    
+    
+    public async Task  onDeleteSubmit()
+    {
+        await _organizationService.DeleteOrganization(currentSelectedOrganization);
+        await GetOrganization();
+        showDelete = false;
+    }
+    
+    private void onCancel()
+    {
+        showDelete = false;
+    }
+    
+    public void onDelete(OrganizationModel org)
+    {
+        showDelete = true;
+        currentSelectedOrganization = org;
+    }
+}

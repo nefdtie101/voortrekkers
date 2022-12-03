@@ -1,0 +1,106 @@
+﻿@page "/Roles/Modules"
+@using DataBaseModles
+@using System.Text.Json
+@inject NavigationManager NavManager
+@inject modulesService _ModulesService
+
+@if (modules == null)
+{
+    <div @onclick="createModule" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/createModule.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Module Name</th>
+            <th class="MyHeading">Module Uri</th>
+            <th class="MyHeading">Actions <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+    </table>
+}
+else
+{
+    <div @onclick="createModule" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/createModule.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Module Name</th>
+            <th class="MyHeading">Module Uri</th>
+            <th class="MyHeading">Actions <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var module in modules)
+        {
+            <tr>
+                <td class="MyBody">@module.ModuleName</td>
+                <td class="MyBody">@module.ModuleUri</td>
+                <td class="MyBody">
+                    <img src="/icons/edit.png" width="17px" @onclick="@(() => UpdateUser(@module))" style="margin-left: 10px; cursor: pointer;">
+                    <img @onclick="@(() => onDelete(@module))" style="cursor: pointer;" src="/icons/Delete.png" width="17px">
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
+    @if (showDelete)
+    {
+        <DeletePopUp message="Do You want to delete this module" onSubmitButton="onDeleteSubmit" onCancelButton="onCancel"></DeletePopUp>
+    }
+}
+
+
+@code {
+    IEnumerable<ModuleModel> modules;
+    bool showDelete = false;
+
+    ModuleModel currentSelecedModule = new ModuleModel();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await GetModules();
+    }
+    
+    public void onDelete(ModuleModel moduleModel) 
+    {
+        showDelete = true;
+        currentSelecedModule = moduleModel ;
+    }
+
+    public async Task onDeleteSubmit()
+    {
+        _ModulesService.DeleteModule(currentSelecedModule);
+        await GetModules();
+        showDelete = false;
+        NavManager.NavigateTo($"/Roles/Modules");
+    }
+    
+    private async Task UpdateUser(ModuleModel module)
+    {
+        var content = JsonSerializer.Serialize(module);
+        NavManager.NavigateTo($"/Roles/Modules/CreateModule?key={content}");
+    }
+
+    public void createModule()
+    {
+        var content = "";
+        NavManager.NavigateTo($"/Roles/Modules/CreateModule?Key={content}"); 
+    }
+    
+    private async Task GetModules()
+    {
+        var res =  await _ModulesService.GetAllModules();
+        modules = res;
+    }
+    
+    private void onCancel()
+    {
+        showDelete = false;
+    }
+
+
+}

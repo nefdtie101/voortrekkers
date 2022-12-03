@@ -1,6 +1,10 @@
 ﻿@page "/Users"
+@using System.Text.Json.Serialization
+@using System.Text.Json
 @inject UserService _userService;
-@inject NavigationManager NavManager
+@inject NavigationManager NavManager;
+@inject ILocalStorageService _localStorageService;
+
 
 <h3 style="text-align:center;">Gebruikers</h3>
 
@@ -30,36 +34,69 @@ else
                 <td class="MyBody">@user.LastName</td>
                 <td class="MyBody">@user.Email</td>
                 <td class="MyBody">
-                    <img src="/icons/edit.png" width="17px" style="margin-left: 10px">
-                    <img src="/icons/Delete.png" width="17px">
+                    <img src="/icons/edit.png" width="17px" @onclick="@(() => UpdateUser(@user))" style="margin-left: 10px; cursor: pointer;">
+                    <img @onclick="@(() => onDelete(@user))" style="cursor: pointer;" src="/icons/Delete.png" width="17px">
                 </td>
             </tr>
         }
         </tbody>
     </table>
+    
+    @if (showDelete)
+    {
+        <DeletePopUp message="Is jy seker jy will die verbruiker verwyder" onSubmitButton="onDeleteSubmit" onCancelButton="onCancel"></DeletePopUp>
+    }
 }
+
 
 
 
 
 @code {
     IEnumerable<UserModel> users;
+    bool showDelete = false;
 
+    UserModel currentSelectedUser = new UserModel();
+
+    public async Task  onDeleteSubmit()
+    {
+        _userService.DeleteUser(currentSelectedUser);
+        await GetUsers();
+        showDelete = false;
+    }
+
+    public void onDelete(UserModel user)
+    {
+        showDelete = true;
+        currentSelectedUser = user;
+    }
 
     protected override async Task OnInitializedAsync()
     {
         await GetUsers();
-
     }
 
     public void createUser()
     {
-        NavManager.NavigateTo("/Users/CreateUser");
+        UserModel user = new UserModel();
+        var content = "";
+        NavManager.NavigateTo($"/Users/CreateUser?Key={content}");
     }
 
     private async Task GetUsers()
     {
         var res =  await _userService.GetAllUsers();
         users = res;
+    }
+
+    private async Task UpdateUser(UserModel User)
+    {
+        var content = JsonSerializer.Serialize(User);
+        NavManager.NavigateTo($"/Users/CreateUser?key={content}");
+    }
+
+    private void onCancel()
+    {
+        showDelete = false;
     }
 }

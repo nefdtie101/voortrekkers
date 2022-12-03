@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.JSInterop;
@@ -18,6 +19,7 @@ public class TokenHelper
     private string _uri;
     private readonly IConfiguration _config;
     private readonly AuthenticationStateProvider _authenticationStateProvider;
+    private readonly NavigationManager navManager;
 
 
     public TokenHelper(ILocalStorageService localStorageService ,IJSRuntime jsRuntime, HttpClient httpClient , IConfiguration config, AuthenticationStateProvider authenticationStateProvider) 
@@ -75,6 +77,7 @@ public class TokenHelper
         await _localStorageService.RemoveItemAsync("token");
         await _localStorageService.RemoveItemAsync("refresh");
         await _authenticationStateProvider.GetAuthenticationStateAsync();
+        navManager.NavigateTo($"/login");
         return "";
     }
     

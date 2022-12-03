@@ -1,0 +1,18 @@
+﻿.MyTable  {
+    border-radius: 2px !important;
+    width: 100% !important;
+}
+
+.MyHeading{
+    border-width: 1px !important;
+    text-align: center !important;
+    height: 50PX;
+}
+
+
+.MyBody {
+    border-bottom-width: 1px !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    text-align: center !important;
+}

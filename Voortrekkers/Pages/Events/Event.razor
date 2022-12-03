@@ -1,0 +1,110 @@
+﻿@page "/Event"
+@using System.Text.Json
+@inject EventService _eventService
+@inject NavigationManager NavManager
+
+@if (events == null)
+{
+    <div @onclick="createEvent" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/EventCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+    <thead>
+    <tr>
+        <th class="MyHeading">Name</th>
+        <th class="MyHeading">Discription</th>
+        <th class="MyHeading">Date</th>
+        <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+    </tr>
+    </thead>
+    </table>
+}
+else
+{
+    <div @onclick="createEvent" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/EventCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Name</th>
+            <th class="MyHeading">Discription</th>
+            <th class="MyHeading">Date</th>
+            <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var _event in events)
+        {
+            <tr>
+                <td class="MyBody">@_event.EventName</td>
+                <td class="MyBody">@_event.EventDiscription</td>
+                <td class="MyBody">@_event.EventDate</td>
+                <td class="MyBody">
+                    <img src="/icons/edit.png" width="17px" @onclick="@(() => UpdateEvent(@_event))" style="margin-left: 10px; cursor: pointer;">
+                    <img @onclick="@(() => onDelete(@_event))" style="cursor: pointer;" src="/icons/Delete.png" width="17px">
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+ @if (showDelete)
+    {
+        <DeletePopUp message="Is jy seker jy will die event verwyder" onSubmitButton="onDeleteSubmit" onCancelButton="onCancel"></DeletePopUp>
+    }
+
+
+
+
+@code {
+    IEnumerable<EventModel> events; 
+    bool showDelete = false;
+    
+    EventModel currentSelectedEventModel = new EventModel();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEvent();
+    }
+    
+    private async Task GetEvent()
+    {
+        var res =  await _eventService.GetAllEvents();
+        events = res;
+    }
+    
+    public void createEvent()
+    {
+        var content = "";
+        NavManager.NavigateTo($"/Event/Create?Key={content}");
+    }
+    
+    private async Task UpdateEvent(EventModel _event)
+    {
+        var content = JsonSerializer.Serialize(_event);
+        NavManager.NavigateTo($"/Event/Create?key={content}");
+    }
+    
+    public async Task  onDeleteSubmit()
+    {
+        await _eventService.DeleteEvent(currentSelectedEventModel);
+        await GetEvent();
+        showDelete = false;
+    }
+    
+    private void onCancel()
+    {
+        showDelete = false;
+    }
+    
+    public void onDelete(EventModel _event)
+    {
+        showDelete = true;
+        currentSelectedEventModel = _event;
+    }
+
+    
+ 
+}

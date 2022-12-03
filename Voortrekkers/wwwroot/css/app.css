@@ -62,3 +62,19 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+.rz-chkbox-box.rz-state-active{
+    background-color: blue !important;
+}
+
+
+.rz-textbox{
+    margin-bottom: 2px;
+}
+
+form{
+    text-align: center;
+}
+
+.rz-inputtext{
+    margin-bottom: 2px;
+}

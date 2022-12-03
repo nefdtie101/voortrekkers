@@ -1,0 +1,132 @@
+﻿@page "/Roles/CreateRole"
+@using DataBaseModles
+@using Microsoft.AspNetCore.WebUtilities
+@using Voortrekkers.Pages.Roles.Module
+@using System.Text.Json
+@inject modulesService _ModulesService
+@inject NavigationManager NavManager
+@inject rolesService roleService
+
+<RadzenCard>
+ <EditForm  Model="role" OnSubmit="onCreate" >
+     <RadzenTextBox @bind-Value="@role.RoleName"  Placeholder="Role Name" Class="w-100"/>
+     <div>
+         @foreach (var module in selectedModules)
+             {
+                 <RadzenCheckBox style="background-color:blue"  Value="@module.selected" Name="@module.Module.ModuleName" @onclick="@(() =>onselectModules(@module.Module.ModuleUri))"  TValue="bool" />
+                 <RadzenLabel Text="@module.Module.ModuleName" Component="@module.Module.ModuleName" Style="margin-left: 8px; vertical-align: middle;" /><br />
+             }
+     </div>
+     <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+      </EditForm>
+</RadzenCard>
+
+@code {
+    RoleModel role = new RoleModel();
+    List<string> url = new List<string>();
+    List<ModuleModel> modules = new List<ModuleModel>();
+    List<SelectedModuleModel> selectedModules = new List<SelectedModuleModel>();
+    string _key;
+    bool newRole = true;
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await GetAllModules();
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("Key", out var key))
+        {
+            _key = key;
+        }
+        if (_key != "")
+        {
+            role = JsonSerializer.Deserialize<RoleModel>(_key);
+            newRole= false;
+        }
+        cheackSelected();
+    }
+
+    public async Task GetAllModules()
+    {
+       modules = await _ModulesService.GetAllModules();
+    }
+    
+    public async Task onCreate()
+    {
+        role.AllowedUrls = new List<string>();
+        foreach(var module in selectedModules)
+        {
+            if (module.selected)
+            {
+                role.AllowedUrls.Add(module.Module.ModuleUri);
+            }
+        }
+        if (newRole)
+        {
+            await roleService.CreateRole(role);
+            NavManager.NavigateTo($"/Roles");
+        }
+        else
+        {
+            await roleService.UpdateRole(role);
+            NavManager.NavigateTo($"/Roles");
+        }
+    }
+
+    public void cheackSelected()
+    {
+        foreach (var module in modules)
+        {
+            if (role.AllowedUrls != null)
+            {
+                var selectedRoles = role.AllowedUrls.FindAll(o => o == module.ModuleUri);
+                if (selectedRoles.Count > 0)
+                {
+                    var m = new SelectedModuleModel
+                    {
+                        Module = module,
+                        selected = true
+                    };
+                    selectedModules.Add(m);
+                }
+                else
+                {
+                    var m = new SelectedModuleModel
+                    {
+                        Module = module,
+                        selected = false
+                    };
+                    selectedModules.Add(m);
+                }
+            }
+            else
+            {
+                var m = new SelectedModuleModel
+                {
+                    Module = module,
+                    selected = false
+                };
+                selectedModules.Add(m);
+            }
+           
+        }
+        
+    }
+
+    public void onselectModules(string module)
+    {
+        var index = selectedModules.FindIndex(o => o.Module.ModuleUri == module);
+        
+        if (selectedModules[index].selected)
+        {
+            selectedModules[index].selected = false;
+        }
+        else
+        {
+            selectedModules[index].selected = true;
+        }
+    }
+    
+    
+}

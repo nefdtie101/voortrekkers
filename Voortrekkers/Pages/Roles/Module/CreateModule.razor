@@ -1,0 +1,60 @@
+﻿@page "/Roles/Modules/CreateModule"
+@using DataBaseModles
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
+@inject NavigationManager NavManager
+@inject modulesService _ModulesService 
+
+<RadzenCard>
+ <EditForm Model="module" OnSubmit="onCreate" >
+      <RadzenTextBox @bind-Value="module.ModuleName"  Placeholder="Module Name" Class="w-100"/>
+      <RadzenTextBox @bind-Value="module.ModuleUri" Placeholder="ModuleUri" Class="w-100"/>
+      <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+      </EditForm>
+</RadzenCard>
+
+
+
+@code {
+    ModuleModel module = new ModuleModel();
+    string _action;
+    bool newModules = true;
+    string _key;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("Key", out var key))
+        {
+            _key = key;
+        }
+        if (_key != "")
+        {
+            module = JsonSerializer.Deserialize<ModuleModel>(_key);
+            newModules = false;
+        }
+    }
+    
+    public async Task onCreate()
+    {
+        if (newModules)
+        {
+            var res = await _ModulesService.CreateModule(module);
+            nav(res);
+        }
+        else
+        {
+            var res = await _ModulesService.UpdateModule(module);
+            nav(res);
+        }
+        
+    }
+
+    private void nav(bool success)
+    {
+        NavManager.NavigateTo("/Roles/Modules");
+    }
+
+    
+}

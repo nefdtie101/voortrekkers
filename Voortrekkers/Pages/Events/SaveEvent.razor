@@ -1,0 +1,116 @@
+﻿@page "/Event/Create"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
+@using DataBaseModles
+@using Voortrekkers.Pages.Organization
+@inject NavigationManager NavManager
+@inject EventService _eventService
+@inject OrganizationService _organizationService
+
+<RadzenCard>
+    <EditForm Model="_event" OnSubmit="onCreate">
+        <RadzenDatePicker @bind-Value="_event.EventDate" ></RadzenDatePicker>
+        <RadzenTextBox @bind-Value="_event.EventName" Placeholder="Name" Class="w-100"/>
+        <RadzenTextBox @bind-Value="_event.EventDiscription" Placeholder="Discription" Class="w-100"/>
+        <RadzenDropDown @bind-Value="selectedType" Placeholder="Aksie Tiepe" Data="@eventType" TextProperty="Name" ValueProperty="Value" style="width: 100%;"></RadzenDropDown>
+        @if (organizations != null)
+        {
+            <RadzenDropDown @bind-Value="_event.idOrganization" Placeholder="Organisasie" Data="@organizations" TextProperty="name" ValueProperty="idOrganization" style="width: 100%;"></RadzenDropDown>
+        }
+        <RadzenTextBox @bind-Value="_event.RedirectUri" Placeholder="RedirectUrl" Class="w-100"/>
+        <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+    </EditForm>
+</RadzenCard>
+
+@code {
+    EventModel _event = new EventModel();
+    List<OrganizationModel> organizations = new List<OrganizationModel>();
+    string _action;
+    List<EventDropdownType> eventType= new  List<EventDropdownType>(){
+        new EventDropdownType(){Name = "Interne Aksie" , Value = 0 },
+        new EventDropdownType(){Name = "Gebied Aksie" , Value = 1 },
+        new EventDropdownType(){Name = "Spesieale Akasie" , Value = 3 },
+        new EventDropdownType(){Name = "Kampe" , Value = 4 },
+        new EventDropdownType(){Name = "Komitee" , Value = 5 },
+    };
+
+    
+    
+    
+    int selectedType;
+    
+    
+    bool newEvent = true;
+    
+    string _key;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("Key", out var name))
+        {
+            _key = name;
+        }
+        if (_key != "")
+        {
+            _event = JsonSerializer.Deserialize<EventModel>(_key);
+            newEvent = false;
+        }
+        await GetOrganization();
+    }
+    
+    public async Task onCreate()
+    {
+        _event.eventType = setEnum(selectedType);
+        if (newEvent)
+        {
+            var res = await _eventService.CreateEvent(_event);
+            nav();
+        }
+        else
+        {
+            var res = await _eventService.UpdateEvent(_event);
+            nav();
+        }
+        
+    }
+
+    private EventType setEnum(int value)
+    {
+        switch (value)
+        {
+            case 0:
+                return EventType.InterneAksie;
+            break;
+            case 1:
+                return EventType.GebiedAksie;
+                break;
+            case 3:
+                return EventType.SpesiealeKasie;
+                break;
+            case 4:
+                return EventType.Kampe;
+                break;
+            case 5:
+                return EventType.Komitee;
+                break;
+                
+        }
+        return EventType.InterneAksie;
+    }
+    
+    private async Task GetOrganization()
+    {
+        var res =  await _organizationService.GetAllOrganizations();
+        organizations = res;
+    }
+    
+    
+    private void nav()
+    {
+        NavManager.NavigateTo("/Event");
+    }
+    
+}

@@ -1,5 +1,10 @@
 ﻿@page "/Users/CreateUser"
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json.Serialization
+@using System.Text.Json
 @inject UserService _userService
+@inject NavigationManager NavManager
+@inject ILocalStorageService _localStorageService;
 
 <RadzenCard>
  <EditForm Model="user" OnSubmit="onCreate" >
@@ -13,12 +18,47 @@
 
 
 @code {
-
     UserModel user = new UserModel();
+    
+    string _action;
+    bool newUser = true; 
+
+    string _key;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("Key", out var name))
+        {
+            _key = name;
+        }
+        if (_key != "")
+        {
+            user = JsonSerializer.Deserialize<UserModel>(_key);
+            newUser = false;
+        }
+    }
+    
 
     public async Task onCreate()
     {
-        var res = await _userService.CreateUser(user);
+        if (newUser)
+        {
+            var res = await _userService.CreateUser(user);
+            nav(res);
+        }
+        else
+        {
+            var res = await _userService.UpdateUser(user);
+            nav(res);
+        }
+        
+    }
+
+    private void nav(bool success)
+    {
+        NavManager.NavigateTo("/Users");
     }
 
 }

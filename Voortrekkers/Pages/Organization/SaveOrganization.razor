@@ -1,0 +1,59 @@
+﻿@page "/Organization/Create"
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
+@inject OrganizationService _organizationService
+@inject NavigationManager NavManager
+@inject ILocalStorageService _localStorageService;
+
+<RadzenCard>
+    <EditForm Model="organization" OnSubmit="onCreate" >
+        <RadzenTextBox @bind-Value="organization.name"  Placeholder="Name" Class="w-100"/>
+        <RadzenTextBox @bind-Value="organization.Discription" Placeholder="Discription" Class="w-100"/>
+        <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+    </EditForm>
+</RadzenCard>
+
+@code {
+    OrganizationModel organization = new OrganizationModel();
+    string _action;
+    
+    bool newOrganization = true;
+    
+    string _key;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("Key", out var name))
+        {
+            _key = name;
+        }
+        if (_key != "")
+        {
+            organization = JsonSerializer.Deserialize<OrganizationModel>(_key);
+            newOrganization = false;
+        }
+    }
+    
+    public async Task onCreate()
+    {
+        if (newOrganization)
+        {
+            var res = await _organizationService.CreateOrganization(organization);
+            nav();
+        }
+        else
+        {
+            var res = await _organizationService.UpdateOrganization(organization);
+            nav();
+        }
+        
+    }
+    
+    
+    private void nav()
+    {
+        NavManager.NavigateTo("/Organization");
+    }
+}

@@ -1,0 +1,115 @@
+﻿@page "/Roles"
+@using DataBaseModles
+@using System.Text.Json
+@inject rolesService roleService
+@inject NavigationManager NavManager
+
+@if (roles == null)
+{
+    <div @onclick="createModule" style="text-align:right; margin-bottom:4px">
+        <img style="cursor: pointer;" src="/icons/createModule.png" width="30px">
+    </div>
+    <div @onclick="createRoles" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/RolesCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Role Name</th>
+            <th class="MyHeading">Actions <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+    </table>
+}
+else
+{
+    <div @onclick="createModule" style="text-align:right; margin-bottom:4px">
+        <img style="cursor: pointer;" src="/icons/createModule.png" width="30px">
+    </div>
+    <div @onclick="createRoles" style="text-align:right; margin-bottom:4px ">
+        <img style="cursor: pointer;" src="/icons/RolesCreate.png" width="30px">
+    </div>
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Role Name</th>
+            <th class="MyHeading">Actions <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var role in roles)
+        {
+            <tr>
+                <td class="MyBody">@role.RoleName</td>
+                <td class="MyBody">
+                    <img src="/icons/edit.png" width="17px" @onclick="@(() => updateRole(@role))" style="margin-left: 10px; cursor: pointer;">
+                    <img @onclick="@(() => onDelete(@role))" style="cursor: pointer;" src="/icons/Delete.png" width="17px">
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    
+    @if (showDelete)
+    {
+        <DeletePopUp message="Do you want to delete this Role" onSubmitButton="onDeleteSubmit" onCancelButton="onCancel"></DeletePopUp>
+    }
+
+
+@code {
+    IEnumerable<RoleModel> roles;
+    bool showDelete = false;
+
+    RoleModel currrentSelected = new RoleModel();
+
+    public async Task getAllRoles()
+    {
+        roles = await roleService.GetAllRoles();
+    }
+
+    public void onDelete(RoleModel role)
+    {
+        showDelete = true;
+        currrentSelected = role;
+    }
+
+    public async Task onDeleteSubmit()
+    {
+        await roleService.DeleteRole(currrentSelected);
+        await getAllRoles();
+        showDelete = false;
+        NavManager.NavigateTo($"/Roles");
+    }
+
+    public void createModule()
+    {
+        NavManager.NavigateTo($"/Roles/Modules");
+    }
+
+    public void createRoles()
+    {
+        var content = "";
+        NavManager.NavigateTo($"/Roles/CreateRole?Key={content}");
+    }
+
+    private async Task updateRole(RoleModel role)
+    {
+        var content = JsonSerializer.Serialize(role);
+        NavManager.NavigateTo($"/Roles/CreateRole?Key={content}");
+    }
+
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await getAllRoles();
+    }
+
+    public void onCancel()
+    {
+        showDelete = false;
+    }
+
+}
+}
