@@ -12,7 +12,7 @@ job("Build and push Docker") {
             // Docker context, by default, project root
             // path to Dockerfile relative to project root
             // if 'file' is not specified, Docker will look for it in 'context'/Dockerfile
-             file = "Voortrekkers/Dockerfile"
+             file = "Dockerfile"
          
 
             val spaceRepo = "nefdtco.registry.jetbrains.space/p/voortrekkers/docker/voortrekkers"
