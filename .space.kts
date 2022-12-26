@@ -15,7 +15,7 @@ job("Build and push Docker") {
              file = "Voortrekkers/Dockerfile"
          
 
-            val spaceRepo = "nefdtco.registry.jetbrains.space/p/voortrekkers/docker/voortrekkerwebsite"
+            val spaceRepo = "nefdtco.registry.jetbrains.space/p/voortrekkers/docker/voortrekkers"
             // image tags for 'docker push'
             tags {
                 +"$spaceRepo:1.0.${"$"}JB_SPACE_EXECUTION_NUMBER"
