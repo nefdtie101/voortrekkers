@@ -1,0 +1,81 @@
+﻿@layout  LoginLayout
+@page "/Form/BasicStudentForm"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
+@inject FormService _FormService
+@inject IConfiguration _config
+@inject IJSRuntime JsRuntime
+
+
+@if (!showPopup)
+{
+    <div id="login-top" class="h-100 d-flex align-items-center justify-content-center">
+        <div class="col-md-6 col-lg-4 p-3">
+            <RadzenCard>
+                <EditForm Model="form" OnSubmit="onSubmit">
+                    <h4 class="mb-4">Skryf in</h4>
+                    <RadzenTextBox @bind-Value="form.Name" Placeholder="Naam" Class="w-50"/>
+                    <RadzenTextBox @bind-Value="form.Surname" Placeholder="Van" Class="w-50"/>
+                    <RadzenTextBox @bind-Value="form.Koemandoe" Placeholder="Koemandoe" Class="w-50"/>
+                    <RadzenTextBox @bind-Value="form.Graad" Placeholder="Graad" Class="w-50"/>
+                    <RadzenTextBox @bind-Value="form.mobileNumber" Placeholder="Cell-Nommer" Class="w-50"/>
+                                        
+                    
+                    <RadzenTextBox @bind-Value="form.EMail" Placeholder="E-Pos Optoneel " Class="w-50"/>
+                    <br/>
+                    <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="ok" ButtonStyle="ButtonStyle.Primary"/>
+                </EditForm>
+            </RadzenCard>
+        </div>
+    </div>
+}
+
+@if (showPopup)
+{
+    <AlertPopUp message="Dankie ons het jou inskrywing ontvang" onSubmitButton="onOK"></AlertPopUp>
+}
+
+@code {
+    BasicStudentFormModel form = new BasicStudentFormModel();
+    string IdEvent;
+    string Redirect;
+    bool showPopup = false;
+    
+    public async void onSubmit()
+    {
+        form.IdEvent = IdEvent;
+        showPopup = true;
+        await _FormService.FillInBasicStudentForm(form);
+      
+    }
+    
+    public async Task onOK()
+    {
+        if (Redirect != "null")
+        {
+            await JsRuntime.InvokeVoidAsync("navigateTO", Redirect );
+        }
+        else
+        {
+            NavManager.NavigateTo(_config.GetValue<string>("websiteDeployUrl"));
+        }
+        
+    }
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("IdEvent", out var events))
+        {
+            IdEvent = events;
+        }
+        if(queryStrings.TryGetValue("Redirect", out var redirect))
+        {
+            Redirect = redirect;
+        }
+       
+    }
+    
+}

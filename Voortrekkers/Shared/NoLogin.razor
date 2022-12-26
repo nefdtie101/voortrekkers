@@ -1,10 +1,30 @@
-﻿@inject NavigationManager NavManager
+﻿@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
 
 
 
 @code {
     protected override async Task OnInitializedAsync()
     {
-        NavManager.NavigateTo("/login");
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("IdEvent", out var Event))
+        {
+            
+        }
+        else if(queryStrings.TryGetValue("Key", out var Key ))
+        {
+            
+        }
+       else if (queryStrings.TryGetValue("email", out var Eamil))
+        {
+            
+        }
+        else
+        {
+            NavManager.NavigateTo("/login"); 
+        }
+        
+       
     }
 }

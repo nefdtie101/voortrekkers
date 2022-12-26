@@ -1,0 +1,29 @@
+﻿
+<div class="modal" tabindex="-1" style="display:block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <h5 class="modal-title">Dankie</h5>
+            <div class="modal-body">
+                <p>@message</p>
+            </div>
+             <div class="modal-footer">
+                    <RadzenButton  style="background-color:blue" Click="SubmitButton"  Text="OK" ButtonStyle="ButtonStyle.Primary"/>
+             </div>
+        </div> 
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string message { get; set; }
+    
+    [Parameter]
+    public EventCallback onSubmitButton { get; set; }
+
+    protected async Task SubmitButton()
+    {
+        await onSubmitButton.InvokeAsync();
+    }
+
+}

@@ -1,0 +1,91 @@
+﻿@page "/"
+@using Voortrekkers.Pages.Index
+@inject IndexService _IndexService
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm vertical-scrollable text-center">
+            <h2 class="col-sm pb-1 mb-2">Interne Aksies</h2>
+            @if (Orgs != null)
+            {
+                @foreach (var org in Orgs)
+                {
+                    <h3 class="mt-2">@org.name</h3>
+                    @foreach (var aksie in InterneAksies.Where(x => x.idOrganization == org.idOrganization))
+                    {
+                        <AksieSelect name="@aksie.EventName" url=@getLinkBasic(@aksie.IdEvent,@aksie.EventName)  />
+                    }
+                }
+
+            }
+        </div>
+        <div class="col-sm  vertical-scrollable text-center">
+            <h2 class="col-sm pb-5 mb-2">Spesiale Aksie</h2>
+            @if (SpisialeAksies != null)
+            {
+                @foreach (var saksie in SpisialeAksies)
+                {
+                    <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
+                }
+            }
+        </div>
+        <div class="col-sm  vertical-scrollable text-center">
+            <h2 class="col-sm mb-2 pb-5">Gebied Aksie</h2>
+            @if (GebiedAksies != null)
+            {
+                @foreach (var saksie in GebiedAksies)
+                {
+                    <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
+                }
+            }
+        </div>
+        <div class="col-sm  vertical-scrollable text-center">
+             <h2 class="col-sm pb-5 mb-2">Kampe</h2>
+            @if (Kampe != null)
+            {
+                @foreach (var saksie in Kampe)
+                {
+                    <AksieSelect name="@saksie.EventName" url=@getLinkBasic(@saksie.IdEvent,@saksie.EventName) />
+                }
+            }
+        </div>
+    </div>
+
+
+
+</div>
+
+
+@code{
+    IEnumerable<EventModel> InterneAksies;
+    IEnumerable<EventModel> GebiedAksies;
+    IEnumerable<EventModel> SpisialeAksies;
+    IEnumerable<EventModel> Kampe;
+    IEnumerable<OrganizationModel> Orgs;
+    
+    
+    protected override async Task OnInitializedAsync()
+    {
+        await GetEvent();
+    }
+
+   public string getLinkBasic(string id , string heading)
+   {
+       return "/BasicFormResult?id=" + id + "&heading=" + heading;
+   }
+    
+    public string getLinkStudent(string id , string heading)
+    {
+        return "/StudentFormResults?id=" + id + "&heading=" + heading;
+    }
+
+
+    private async Task GetEvent()
+    {
+        InterneAksies = await _IndexService.GetAllInterneAksies();
+        GebiedAksies = await _IndexService.GetAllGebiedsAksies();
+        SpisialeAksies = await _IndexService.GetAllSpesialeAksies();
+        Kampe = await _IndexService.GetAllKampe();
+        Orgs = await _IndexService.GetAllGroepe();
+    }
+}

@@ -24,4 +24,16 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Pages\Public" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\FormResults\BasicFormResult.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Pages\Forms\FormResults\BasicFormResult.razor" />
+    </ItemGroup>
+
 </Project>

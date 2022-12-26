@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Voortrekkers;
+using Voortrekkers.Pages.Email;
+using Voortrekkers.Pages.Forms;
+using Voortrekkers.Pages.Index;
 using Voortrekkers.Pages.Login;
 using Voortrekkers.Pages.Organization;
 using Voortrekkers.Pages.ResetPassword;
@@ -11,6 +14,7 @@ using Voortrekkers.Pages.Roles;
 using Voortrekkers.Pages.Roles.Module;
 using Voortrekkers.Pages.UserManger;
 using Voortrekkers.Shared.Helper;
+
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 WebAssemblyHostConfiguration configuration = builder.Configuration;
@@ -30,6 +34,8 @@ builder.Services.AddScoped<rolesService>();
 builder.Services.AddScoped<OrganizationService>();
 builder.Services.AddScoped<EventService>();
 builder.Services.AddScoped<modulesService>();
-
+builder.Services.AddScoped<FormService>();
+builder.Services.AddScoped<IndexService>();
+builder.Services.AddScoped<EmailService>();
 
 await builder.Build().RunAsync();

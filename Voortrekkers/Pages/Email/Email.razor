@@ -1,0 +1,51 @@
+﻿@page "/Email"
+@inject EmailService _email
+@inject NavigationManager NavManager;
+
+<RadzenCard>
+    <EditForm Model="email" OnSubmit="onSubmit">
+        <h4 class="mb-4">Create Email</h4>
+        <RadzenCheckBox @bind-Value=@email.Staatmaker  Name="NetStaatmakers" TValue="bool" Change=@(args => OnChangeBox(args)) />
+        <RadzenLabel Text="Net Staatmakers" Component="NetStaatmakers" Style="margin-left: 8px; vertical-align: middle;" />
+        <RadzenTextBox @bind-Value="email.Subject" Placeholder="Subject" Class="w-100"/>
+        <RadzenHtmlEditor Change=@OnChange @bind-Value="email.Message" Placeholder="Message"  Style="text-align: center">
+                <RadzenHtmlEditorUndo />
+                <RadzenHtmlEditorRedo />
+                <RadzenHtmlEditorSeparator />
+                <RadzenHtmlEditorBold />
+                <RadzenHtmlEditorItalic />
+                <RadzenHtmlEditorUnderline />
+                <RadzenHtmlEditorStrikeThrough />
+                <RadzenHtmlEditorSeparator />
+                <RadzenHtmlEditorColor />
+                <RadzenHtmlEditorBackground />
+                <RadzenHtmlEditorRemoveFormat />
+        </RadzenHtmlEditor>
+        <br/>
+        <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="ok" ButtonStyle="ButtonStyle.Primary"/>
+    </EditForm>
+</RadzenCard>
+
+
+@code {
+    EmailModel email = new EmailModel();
+
+    public void onSubmit()
+    {
+        _email.SendEmail(email);
+        NavManager.NavigateTo("/");
+        
+    }
+    
+    void OnChange(string html)
+    {
+        email.Message = html;
+    }
+
+    void OnChangeBox(bool value)
+    {
+        email.Staatmaker = value;
+    }
+
+
+}

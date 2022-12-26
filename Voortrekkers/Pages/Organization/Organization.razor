@@ -79,7 +79,7 @@
     private async Task UpdateOrg(OrganizationModel org)
     {
         var content = JsonSerializer.Serialize(org);
-        NavManager.NavigateTo($"/Users/CreateUser?key={content}");
+        NavManager.NavigateTo($"/Organization/Create?key={content}");
     }
     
     

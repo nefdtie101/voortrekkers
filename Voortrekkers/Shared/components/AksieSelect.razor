@@ -1,0 +1,13 @@
+﻿
+<div class="border border-dark mb-2">
+    <p>@name</p>
+    <a href=@url>Gaan na Aksie</a>
+</div>
+
+@code {
+    [Parameter]
+    public string url { get; set; }
+    
+    [Parameter]
+    public string name { get; set; }
+}

@@ -58,27 +58,39 @@ public class TokenHelper
 
     private async Task<string> RefreshToken(string token)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
-        var claims = jwt.Claims.ToList();
-        var email = claims[0].Value;
-        var refresh = await _localStorageService.GetItemAsStringAsync("refresh");
-        refresh =  refresh.Replace("\"", "");
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refresh);
-        var result = await _httpClient.GetFromJsonAsync<JwtModel>(_uri + $"/Refresh?email={email}&token={refresh}");
-        if (result.valid)
+        try
         {
-            await _localStorageService.SetItemAsync("token", result.token);
-            await _localStorageService.SetItemAsync("refresh", result.refresh);
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var claims = jwt.Claims.ToList();
+            var email = claims[0].Value;
+            var refresh = await _localStorageService.GetItemAsStringAsync("refresh");
+            refresh =  refresh.Replace("\"", "");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", refresh);
+            var result = await _httpClient.GetFromJsonAsync<JwtModel>(_uri + $"/Refresh?email={email}&token={refresh}");
+            if (result.valid)
+            {
+                await _localStorageService.SetItemAsync("token", result.token);
+                await _localStorageService.SetItemAsync("refresh", result.refresh);
+                await _authenticationStateProvider.GetAuthenticationStateAsync();
+                return result.token;
+            }
+            await _localStorageService.RemoveItemAsync("token");
+            await _localStorageService.RemoveItemAsync("refresh");
             await _authenticationStateProvider.GetAuthenticationStateAsync();
-            return result.token;
+            navManager.NavigateTo($"/login");
+            return "";  
+
         }
-        
-        await _localStorageService.RemoveItemAsync("token");
-        await _localStorageService.RemoveItemAsync("refresh");
-        await _authenticationStateProvider.GetAuthenticationStateAsync();
-        navManager.NavigateTo($"/login");
-        return "";
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            await _localStorageService.RemoveItemAsync("token");
+            await _localStorageService.RemoveItemAsync("refresh");
+            await _authenticationStateProvider.GetAuthenticationStateAsync();
+            navManager.NavigateTo($"/login");
+            return "";  
+        }
     }
     
 }

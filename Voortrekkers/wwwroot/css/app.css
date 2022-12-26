@@ -78,3 +78,32 @@ form{
 .rz-inputtext{
     margin-bottom: 2px;
 }
+
+.middle-form{
+    margin-left: 40%;
+    margin-top: 10%;
+}
+
+.MyTable  {
+    border-radius: 2px !important;
+    width: 100% !important;
+}
+
+.MyHeading{
+    border-width: 1px !important;
+    text-align: center !important;
+    height: 50PX;
+}
+
+
+.MyBody {
+    border-bottom-width: 1px !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    text-align: center !important;
+}
+
+.login-top{
+    text-align:center !important;
+    margin-left: 38% !important;
+}

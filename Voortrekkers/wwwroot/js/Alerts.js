@@ -9,3 +9,8 @@ function resetPassword(){
 function createPasswordError(){
     alert('Wagwoord stem nie ooreen nie of u skakel is oud')
 }
+
+
+function navigateTO(path){
+    window.location.replace(path);
+}

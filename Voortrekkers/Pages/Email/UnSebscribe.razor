@@ -1,0 +1,22 @@
+﻿@layout  LoginLayout
+@page "/UnSebscribe"
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavManager
+@inject EmailService _EmailService
+
+<h1 style="text-align: center">Dankie ons het jou epos verwyder van ons lys af </h1>
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if (queryStrings.TryGetValue("email", out var Eamil))
+        {
+          await _EmailService.UnSubscribe(Eamil);
+        }
+       
+    }
+
+}

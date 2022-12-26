@@ -1,0 +1,129 @@
+﻿@page "/BasicFormResult"
+@using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
+@inject NavigationManager NavManager
+@inject FormService _FormService
+@inject IJSRuntime JsRuntime
+
+
+<h1 style="text-align: center" >@Heading</h1>
+
+@if (basicform != null )
+{
+    <img style="cursor: pointer;" @onclick="DownloadCSV" src="icons/csv.jpg" width="30px">
+    <table class="MyTable" >
+        <thead>
+        <tr>
+            <th class="MyHeading">Naam</th>
+            <th class="MyHeading">Van</th>
+            <th class="MyHeading">E-Pos</th>
+            <th class="MyHeading">Paid</th>
+            <th class="MyHeading">Atended</th>
+            <th class="MyHeading">Aksies <i class="bi bi-plus"></i> </th>
+        </tr>
+        </thead>
+        <tbody style="overflow:scroll;">
+        @foreach (var form in basicform)
+        {
+            <tr>
+                <td class="MyBody">@form.Name</td>
+                <td class="MyBody">@form.Surname</td>
+                <td class="MyBody">@form.EMail</td>
+                <td class="MyBody">@form.Paid</td>
+                <td class="MyBody">@form.Attended</td>
+                <td class="MyBody">
+                    <img @onclick="@(() => onPaid(@form))" style="cursor: pointer;" src="/icons/paid.png" width="17px"> 
+                    <img @onclick="@(() => onAttended(@form))" style="cursor: pointer;" src="/icons/Attended.png" width="17px"> 
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table> 
+    
+    @if (showPaid)
+    {
+        <GenericPopUp message="Is jy seker jy wil die inskrywing merk as betaal" Heading="Betaal" onSubmitButton="MarkAsPaid" onCancelButton="onCancel"/>
+    }
+    
+    @if (showAttend)
+    {
+        <GenericPopUp message="Is jy seker jy wil die inskrywing merk as bygewoon" Heading="Bygewoon" onSubmitButton="MarkAsAttended" onCancelButton="onCancel"/>
+    }
+
+}
+
+@code {
+    IEnumerable<BasicFormModel> basicform;
+    public string _id;
+    string Heading;
+    bool showPaid = false;
+    bool showAttend = false;
+    BasicFormModel selected;
+
+    
+    
+    public async Task DownloadCSV()
+    {
+        await JsRuntime.InvokeVoidAsync("exportTableToExcel",Heading);
+    }
+  
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavManager.ToAbsoluteUri(NavManager.Uri);
+        var queryStrings = QueryHelpers.ParseQuery(uri.Query);
+        if(queryStrings.TryGetValue("id", out var name))
+        {
+            _id = name;
+        }
+        if (_id != "")
+        {
+            await GetForm();
+        }
+        if(queryStrings.TryGetValue("heading", out var h))
+        {
+            Heading= h;
+        }
+    }
+
+    public async Task GetForm()
+    {
+        var res = await _FormService.GetBasicFormFormEventId(_id);
+        basicform = res;
+    }
+
+    public async Task MarkAsPaid()
+    {
+        await _FormService.MarkBasicAsPaid(selected.IdBasicForm);
+        showPaid = false;
+        NavManager.NavigateTo( NavManager.Uri , true);
+    }
+    
+    public async Task MarkAsAttended()
+    {
+        await _FormService.MarkAsAttended(selected.IdBasicForm);
+        showAttend = false;
+        NavManager.NavigateTo( NavManager.Uri , true);
+    }
+
+    public void onPaid(BasicFormModel select)
+    {
+        selected = select;
+        showPaid = true;
+        
+    }
+    
+    public void onAttended(BasicFormModel select)
+    {
+        selected = select;
+        showAttend = true;
+    }
+
+    public void onCancel()
+    {
+        showPaid = false;
+        showAttend = false;
+    }
+    
+
+}
