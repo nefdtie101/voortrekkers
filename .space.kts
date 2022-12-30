@@ -8,7 +8,7 @@ job("Build and push Docker") {
     host("Build artifacts and a Docker image") {
        shellScript {
             content = """
-                cp /Voortrekkers/settings/appsettings.json  /Voortrekkers/wwwroot/appsettings.json
+                cp Voortrekkers/settings/appsettings.json  Voortrekkers/wwwroot/appsettings.json
             """
         }
 
