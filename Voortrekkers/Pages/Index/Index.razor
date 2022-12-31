@@ -2,61 +2,75 @@
 @using Voortrekkers.Pages.Index
 @inject IndexService _IndexService
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm vertical-scrollable text-center">
-            <h2 class="col-sm pb-1 mb-2">Interne Aksies</h2>
-            @if (Orgs != null)
-            {
-                @foreach (var org in Orgs)
-                {
-                    <h3 class="mt-2">@org.name</h3>
-                    @foreach (var aksie in InterneAksies.Where(x => x.idOrganization == org.idOrganization))
-                    {
-                        <AksieSelect name="@aksie.EventName" url=@getLinkBasic(@aksie.IdEvent,@aksie.EventName)  />
-                    }
-                }
-
-            }
-        </div>
-        <div class="col-sm  vertical-scrollable text-center">
-            <h2 class="col-sm pb-5 mb-2">Spesiale Aksie</h2>
-            @if (SpisialeAksies != null)
-            {
-                @foreach (var saksie in SpisialeAksies)
-                {
-                    <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
-                }
-            }
-        </div>
-        <div class="col-sm  vertical-scrollable text-center">
-            <h2 class="col-sm mb-2 pb-5">Gebied Aksie</h2>
-            @if (GebiedAksies != null)
-            {
-                @foreach (var saksie in GebiedAksies)
-                {
-                    <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
-                }
-            }
-        </div>
-        <div class="col-sm  vertical-scrollable text-center">
-             <h2 class="col-sm pb-5 mb-2">Kampe</h2>
-            @if (Kampe != null)
-            {
-                @foreach (var saksie in Kampe)
-                {
-                    <AksieSelect name="@saksie.EventName" url=@getLinkBasic(@saksie.IdEvent,@saksie.EventName) />
-                }
-            }
-        </div>
+@if(load){
+    <div class="h-100 d-flex align-items-center justify-content-center">
+        <div class="loader"></div>
     </div>
+}
 
 
-
-</div>
+@if (load == false)
+{
+    <div>
+         <div class="container">
+                <div class="row">
+                    <div class="col-sm vertical-scrollable text-center">
+                        <h2 class="col-sm pb-1 mb-2">Interne Aksies</h2>
+                        @if (Orgs != null)
+                        {
+                            @foreach (var org in Orgs)
+                            {
+                                <h3 class="mt-2">@org.name</h3>
+                                @foreach (var aksie in InterneAksies.Where(x => x.idOrganization == org.idOrganization))
+                                {
+                                    <AksieSelect name="@aksie.EventName" url=@getLinkBasic(@aksie.IdEvent,@aksie.EventName)  />
+                                }
+                            }
+            
+                        }
+                    </div>
+                    <div class="col-sm  vertical-scrollable text-center">
+                        <h2 class="col-sm pb-5 mb-2">Spesiale Aksie</h2>
+                        @if (SpisialeAksies != null)
+                        {
+                            @foreach (var saksie in SpisialeAksies)
+                            {
+                                <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
+                            }
+                        }
+                    </div>
+                    <div class="col-sm  vertical-scrollable text-center">
+                        <h2 class="col-sm mb-2 pb-5">Gebied Aksie</h2>
+                        @if (GebiedAksies != null)
+                        {
+                            @foreach (var saksie in GebiedAksies)
+                            {
+                                <AksieSelect name="@saksie.EventName" url=@getLinkStudent(@saksie.IdEvent,@saksie.EventName)/>
+                            }
+                        }
+                    </div>
+                    <div class="col-sm  vertical-scrollable text-center">
+                         <h2 class="col-sm pb-5 mb-2">Kampe</h2>
+                        @if (Kampe != null)
+                        {
+                            @foreach (var saksie in Kampe)
+                            {
+                                <AksieSelect name="@saksie.EventName" url=@getLinkBasic(@saksie.IdEvent,@saksie.EventName) />
+                            }
+                        }
+                    </div>
+                </div>
+            
+            
+            
+            </div>
+    </div>
+   
+}  
 
 
 @code{
+    bool load = false;
     IEnumerable<EventModel> InterneAksies;
     IEnumerable<EventModel> GebiedAksies;
     IEnumerable<EventModel> SpisialeAksies;
@@ -66,7 +80,10 @@
     
     protected override async Task OnInitializedAsync()
     {
+        load = true;
         await GetEvent();
+        load = false;
+
     }
 
    public string getLinkBasic(string id , string heading)
