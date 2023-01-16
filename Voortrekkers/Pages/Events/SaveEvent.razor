@@ -19,6 +19,19 @@
             <RadzenDropDown @bind-Value="_event.idOrganization" Placeholder="Organisasie" Data="@organizations" TextProperty="name" ValueProperty="idOrganization" style="width: 100%;"></RadzenDropDown>
         }
         <RadzenTextBox @bind-Value="_event.RedirectUri" Placeholder="RedirectUrl" Class="w-100"/>
+         <RadzenHtmlEditor Change=@OnChange @bind-Value="_event.Message" Placeholder="Message"  Style="text-align: center">
+                        <RadzenHtmlEditorUndo />
+                        <RadzenHtmlEditorRedo />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorBold />
+                        <RadzenHtmlEditorItalic />
+                        <RadzenHtmlEditorUnderline />
+                        <RadzenHtmlEditorStrikeThrough />
+                        <RadzenHtmlEditorSeparator />
+                        <RadzenHtmlEditorColor />
+                        <RadzenHtmlEditorBackground />
+                        <RadzenHtmlEditorRemoveFormat />
+                </RadzenHtmlEditor>
         <RadzenButton ButtonType="ButtonType.Submit" style="background-color:blue" Text="OK" ButtonStyle="ButtonStyle.Primary"/>
     </EditForm>
 </RadzenCard>
@@ -59,6 +72,11 @@
             newEvent = false;
         }
         await GetOrganization();
+    }
+    
+    void OnChange(string html)
+    {
+        _event.Message = html;
     }
     
     public async Task onCreate()
